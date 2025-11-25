@@ -1,4 +1,9 @@
 local types = require("openmw.types")
+local I = require("openmw.interfaces")
+
+Dependencies = {
+    ["Impact Effects.omwscripts"] = I.impactEffects == nil,
+}
 
 JammedLocks = {}
 

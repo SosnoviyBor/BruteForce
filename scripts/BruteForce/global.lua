@@ -1,18 +1,5 @@
 local world = require("openmw.world")
 
--- local function onUnlock(data)
---     print("hoi")
---     for _, player in ipairs(world.players) do
---         player:sendEvent("jammedLockOpen", {id = data.target.id})
---     end
--- end
-
--- return {
---     eventHandlers = {
---         Unlock = onUnlock,
---     },
--- }
-
 local time = require("openmw_aux.time")
 local types = require("openmw.types")
 
@@ -35,3 +22,16 @@ time.runRepeatedly(
     checkLockables,
     5,
     { type = time.SimulationTime })
+
+local function onUnlock(data)
+    print("hoi")
+    for _, player in ipairs(world.players) do
+        player:sendEvent("jammedLockOpen", {id = data.target.id})
+    end
+end
+
+return {
+    eventHandlers = {
+        Unlock = onUnlock,
+    },
+}

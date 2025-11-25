@@ -4,17 +4,21 @@ local self = require("openmw.self")
 local core = require("openmw.core")
 local I = require("openmw.interfaces")
 
+local omw_utils = require("scripts.BruteForce.utils.openmw_utils")
+
 local sectionDebug = storage.playerSection("SettingsBruteForce_debug")
 local sectionSettings = storage.playerSection("SettingsBruteForce_settings")
 local l10n = core.l10n("BruteForce")
 
-function RegisterAttack(o)
+local logic = {}
+
+function logic.registerAttack(o)
     return sectionDebug:get("modEnabled")
         and types.Lockable.objectIsInstance(o)
         and types.Lockable.isLocked(o)
 end
 
-function AttackMissed(o)
+function logic.attackMissed(o)
     if I.BruteForce.isLockJammed(o.id) then
         self:sendEvent('ShowMessage', { message = l10n("lock_was_jammed") })
         return true
@@ -30,14 +34,14 @@ function AttackMissed(o)
     end
 
     -- emulate hit chance
-    if math.random() > CalcHitChance(self) and not sectionDebug:get("alwaysHit") then
+    if math.random() > omw_utils.calcHitChance(self) and not sectionDebug:get("alwaysHit") then
         return true
     end
 
     return false
 end
 
-function Unlock(o)
+function logic.unlock(o)
     if math.random() > sectionSettings:get("jamChance") then
         -- unlock lock
         core.sendGlobalEvent("Unlock", { target = o })
@@ -50,23 +54,23 @@ function Unlock(o)
     end
 end
 
-function GiveCurrWeaponXp()
+function logic.giveCurrWeaponXp()
     if not sectionSettings:get("enableXpReward") then return end
     I.SkillProgression.skillUsed(
-        GetEquippedWeaponSkillId(self),
+        omw_utils.getEquippedWeaponSkillId(self),
         { useType = I.SkillProgression.SKILL_USE_TYPES.Weapon_SuccessfulHit }
     )
 end
 
-function MakeSound(o)
+function logic.alertNpcs(o)
     -- TODO
 end
 
-function ObjectIsOwned(o)
+function logic.objectIsOwned(o)
     return o.owner.factionId or o.owner.recordId
 end
 
-function DamageContainerEquipment(o)
+function logic.damageContainerEquipment(o)
     if not sectionSettings:get("damageContentsOnUnlock") then return end
     for _, item in pairs(o.type.inventory(o):getAll()) do
         local itemRecord = item.type.records[item.recordId]
@@ -78,3 +82,5 @@ function DamageContainerEquipment(o)
         end
     end
 end
+
+return logic

@@ -1,6 +1,10 @@
+local core = require("openmw.core")
+
 require("scripts.BruteForce.utils.consts")
 
-function GetEquippedWeaponSkillId(actor)
+local utils = {}
+
+function utils.getEquippedWeaponSkillId(actor)
     local weapon = actor.type.getEquipment(actor, actor.type.EQUIPMENT_SLOT.CarriedRight)
     if weapon then
         local weaponType = weapon.type.records[weapon.recordId].type
@@ -10,7 +14,7 @@ function GetEquippedWeaponSkillId(actor)
     end
 end
 
-function GetEquippedWeaponSkill(actor)
+function utils.getEquippedWeaponSkill(actor)
     local weapon = actor.type.getEquipment(actor, actor.type.EQUIPMENT_SLOT.CarriedRight)
     if weapon then
         local weaponType = weapon.type.records[weapon.recordId].type
@@ -20,8 +24,8 @@ function GetEquippedWeaponSkill(actor)
     end
 end
 
-function CalcHitChance(actor)
-    local weaponSkill = GetEquippedWeaponSkill(actor).modified
+function utils.calcHitChance(actor)
+    local weaponSkill = utils.getEquippedWeaponSkill(actor).modified
     local agility = actor.type.stats.attributes.agility(actor).modified
     local luck = actor.type.stats.attributes.luck(actor).modified
 
@@ -33,7 +37,22 @@ function CalcHitChance(actor)
     local fortAttack = activeEffects:getEffect("fortifyattack").magnitude
     local blind = activeEffects:getEffect("blind").magnitude
 
-    return ((weaponSkill + agility / 5 + luck / 10) * (.75 + (.5 * (currFatigue / baseFatigue))) + fortAttack - blind) /
-    100
-    -- (Weapon Skill + Agility/5 + Luck/10) × (0.75 + (0.5 × (Current Fatigue/Maximum Fatigue))) + Fortify Attack Magnitude + Blind Magnitude
+    return ((weaponSkill + agility / 5 + luck / 10) * (.75 + (.5 * (currFatigue / baseFatigue))) + fortAttack - blind) / 100
 end
+
+-- dependencies: table where key = file name, value = boolean indicating whether required interface is missing
+-- e.g. { ["Impact Effects.omwscripts"] = I.impactEffects == nil }
+-- if mod has no interfaces, set it's value to false
+-- e.g. { ["Some Mod.omwscripts"] = false }
+function utils.checkDependencies(player, dependencies)
+    for fileName, interfaceMissing in pairs(dependencies) do
+        local filePresent = core.contentFiles.has(string.lower(fileName))
+        if not filePresent or interfaceMissing then
+            player:sendEvent('ShowMessage', {
+                message = "[Brute Force] ERROR: Dependency \"" .. fileName .. "\" is either missing or loaded after the Brute Force."
+            })
+        end
+    end
+end
+
+return utils
