@@ -24,6 +24,8 @@ Any lock has a **15% chance** to get bent in the process (configurable) and no l
 
 This helps tone down the effectiveness of absurdly strong barbarians breaking every door in their way just by looking in their general direction.
 
+This status is removed only when you unlock the lock the traditional way and open the door/container. So if you bend a lock, unlock it with spell/lockpick/etc, lock it back without interacting with the door/container, the lock will continue to count as "bent".
+
 ### And Don't Forget That Breaking Locks is LOUD!
 
 It shouldn't be a surprise that hitting a lock with a chunk of metal (or anything, really) is loud. So breaking locks in tombs, ruins, or caves shouldn't make much of a difference, but in cities... let's just say, get ready to cause some ruckus.
@@ -36,17 +38,11 @@ If you hit an owned lock, two things happen for each present NPC:
 At first I thought that it would be too restrictive. But let's be real - barbarians aren't supposed to be super good at thievery in the first place. They don't avoid combat - they initiate it!  
 All values, of course, are configurable too.
 
-## Known Issues
-
-### Lock's "bent" status is removed only when a player opens it's container/door
-
-So if you bend a lock, unlock it the traditional way, lock it back with a spell or console command without interacting with door/container it was locking, the mod will continue thinking that the lock is still bent. This is intended, since it's impact is negligible and making additional checks on cell transition would harm the performance more than helping it.
-
 ## Requirements
 
 [**Impact Effects**](https://www.nexusmods.com/morrowind/mods/55508) by taitechnic is a hard requirement.
 
 ## Special Thanks
 
-**taitechnic** – making Impact Effects which is core to this mod and a fantastic mod by itself.
+**taitechnic** – making Impact Effects which is core to this mod and a fantastic mod by itself.  
 **AOSity** - idea for alarming NPC on breaking an owned lock.

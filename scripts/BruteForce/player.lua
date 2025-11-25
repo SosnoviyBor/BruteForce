@@ -22,7 +22,7 @@ local function tryUnlocking(data)
             L.damageContainerEquipment(o)
         end
         if L.objectIsOwned(o) then
-            L.alertNpcs(o)
+            L.alertNpcs()
         end
     end
 end

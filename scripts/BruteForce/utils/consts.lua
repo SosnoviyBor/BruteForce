@@ -31,3 +31,13 @@ WeaponTypeToSkillId = {
     [wTypes.ShortBladeOneHand] = "shortblade",
     [wTypes.SpearTwoWide] = "spear",
 }
+
+DamageableItemTypes = {
+    [types.Weapon] = true,
+    [types.Armor] = true,
+}
+NonDamageableWeaponTypes = {
+    [wTypes.Arrow] = true,
+    [wTypes.Bolt] = true,
+    [wTypes.MarksmanThrown] = true,
+}

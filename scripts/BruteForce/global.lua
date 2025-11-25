@@ -32,6 +32,12 @@ local function setJammedLock(data)
     JammedLocks[data.id] = data.val
 end
 
+local function addBounty(data)
+    local player = data.player
+    local currrentBounty = player.type.getCrimeLevel(player)
+    player.type.setCrimeLevel(player, currrentBounty + data.bounty)
+end
+
 return {
     engineHandlers = {
         onLoad = onLoad,
@@ -40,5 +46,6 @@ return {
     eventHandlers = {
         checkJammedLock = checkJammedLock,
         setJammedLock = setJammedLock,
+        addBounty = addBounty,
     },
 }

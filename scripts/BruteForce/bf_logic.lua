@@ -1,13 +1,16 @@
 local storage = require("openmw.storage")
+local nearby = require("openmw.nearby")
 local types = require("openmw.types")
 local self = require("openmw.self")
 local core = require("openmw.core")
 local I = require("openmw.interfaces")
 
 local omw_utils = require("scripts.BruteForce.utils.openmw_utils")
+local detection = require("scripts.BruteForce.utils.detection")
 
 local sectionDebug = storage.playerSection("SettingsBruteForce_debug")
-local sectionSettings = storage.playerSection("SettingsBruteForce_settings")
+local sectionUnlocking = storage.playerSection("SettingsBruteForce_unlocking")
+local sectionAlerting = storage.playerSection("SettingsBruteForce_alerting")
 local l10n = core.l10n("BruteForce")
 
 local logic = {}
@@ -22,7 +25,7 @@ function logic.attackMissed(o)
     -- check strength
     local str = self.type.stats.attributes.strength(self).modified
     local lockLevel = types.Lockable.getLockLevel(o)
-    local toughness = lockLevel + sectionSettings:get("strBonus")
+    local toughness = lockLevel + sectionUnlocking:get("strBonus")
     if toughness > str then
         self:sendEvent('ShowMessage', { message = l10n("too_weak") })
         return true
@@ -37,7 +40,7 @@ function logic.attackMissed(o)
 end
 
 function logic.unlock(o)
-    if math.random() > sectionSettings:get("jamChance") then
+    if math.random() > sectionUnlocking:get("jamChance") then
         -- unlock lock
         core.sendGlobalEvent("Unlock", { target = o })
         return true
@@ -50,15 +53,52 @@ function logic.unlock(o)
 end
 
 function logic.giveCurrWeaponXp()
-    if not sectionSettings:get("enableXpReward") then return end
+    if not sectionUnlocking:get("enableXpReward") then return end
     I.SkillProgression.skillUsed(
         omw_utils.getEquippedWeaponSkillId(self),
         { useType = I.SkillProgression.SKILL_USE_TYPES.Weapon_SuccessfulHit }
     )
 end
 
-function logic.alertNpcs(o)
-    -- TODO
+local function aggroGuard(actor)
+    local class = actor.type.records[actor.recordId].class
+    if string.lower(class) == "guard"
+        or string.find(actor.recordId, "guard")
+    then
+        actor:sendEvent('StartAIPackage', { type = 'Pursue', target = self.object })
+    end
+end
+
+function logic.alertNpcs()
+    local bounty = sectionAlerting:get("bounty")
+    if bounty <= 0 then return end
+
+    local losMaxDistBase = sectionAlerting:get("losMaxDistBase")
+    local losMaxDistSneakModifier = sectionAlerting:get("losMaxDistSneakModifier")
+    local soundRangeBase = sectionAlerting:get("soundRangeBase")
+    local soundRangeWeaponSkillModifier = sectionAlerting:get("soundRangeWeaponSkillModifier")
+    local sneak = self.type.stats.skills.sneak(self).modified
+    local weaponSkill = omw_utils.getEquippedWeaponSkill(self).modified
+
+    local losMaxDist = losMaxDistBase - sneak * losMaxDistSneakModifier
+    local soundRange = soundRangeBase - weaponSkill * soundRangeWeaponSkillModifier
+
+    local detected = false
+
+    for _, actor in ipairs(nearby.actors) do
+        if types.NPC.objectIsInstance(actor) then
+            if detection.canNpcSeePlayer(actor, self, nearby, losMaxDist)
+                or detection.isWithinDistance(actor, self, soundRange)
+            then
+                detected = true
+                aggroGuard(actor)
+            end
+        end
+    end
+
+    if detected then
+        core.sendGlobalEvent("addBounty", { player = self, bounty = bounty })
+    end
 end
 
 function logic.objectIsOwned(o)
@@ -66,13 +106,13 @@ function logic.objectIsOwned(o)
 end
 
 function logic.damageContainerEquipment(o)
-    if not sectionSettings:get("damageContentsOnUnlock") then return end
+    if not sectionUnlocking:get("damageContentsOnUnlock") then return end
     for _, item in pairs(o.type.inventory(o):getAll()) do
-        local itemRecord = item.type.records[item.recordId]
-        if itemRecord.health then
+        if omw_utils.itemCanBeDamaged(item) then
+            local dmg = -math.random(item.type.records[item.recordId].health)
             core.sendGlobalEvent("ModifyItemCondition", {
                 item = item,
-                amount = -math.random(itemRecord.health)
+                amount = dmg
             })
         end
     end

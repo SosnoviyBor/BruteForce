@@ -1,3 +1,4 @@
+local types = require("openmw.types")
 local core = require("openmw.core")
 
 require("scripts.BruteForce.utils.consts")
@@ -53,6 +54,17 @@ function utils.checkDependencies(player, dependencies)
             })
         end
     end
+end
+
+function utils.itemCanBeDamaged(item)
+    if not DamageableItemTypes[item.type] then return false end
+
+    if item.type == types.Weapon then
+        local wType = item.type.records[item.recordId].type
+        if NonDamageableWeaponTypes[wType] then return false end
+    end
+
+    return true
 end
 
 return utils

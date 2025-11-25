@@ -13,7 +13,7 @@ lock_was_jammed: This lock is already bent.
 page_name: Brute Force
 page_description: Allows breaking locks with melee weapons.
 
-settings_group_name: Settings
+unlocking_group_name: Unlocking Behavior
 strBonus_name: Strength Requirement
 strBonus_description: >
   To break a lock you need (LockLevel + StrengthRequirement) amount of strength.
