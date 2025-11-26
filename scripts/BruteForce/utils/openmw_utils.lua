@@ -38,7 +38,11 @@ function utils.calcHitChance(actor)
     local fortAttack = activeEffects:getEffect("fortifyattack").magnitude
     local blind = activeEffects:getEffect("blind").magnitude
 
-    return ((weaponSkill + agility / 5 + luck / 10) * (.75 + (.5 * (currFatigue / baseFatigue))) + fortAttack - blind) / 100
+    return (
+        (weaponSkill + agility / 5 + luck / 10)
+        * (.75 + (.5 * (currFatigue / baseFatigue)))
+        + fortAttack - blind
+    ) / 100
 end
 
 -- dependencies: table where key = file name, value = boolean indicating whether required interface is missing
@@ -50,7 +54,8 @@ function utils.checkDependencies(player, dependencies)
         local filePresent = core.contentFiles.has(string.lower(fileName))
         if not filePresent or interfaceMissing then
             player:sendEvent('ShowMessage', {
-                message = "[Brute Force] ERROR: Dependency \"" .. fileName .. "\" is either missing or loaded after the Brute Force."
+                message = "[Brute Force] ERROR: Dependency \""
+                    .. fileName .. "\" is either missing or loaded after the Brute Force."
             })
         end
     end

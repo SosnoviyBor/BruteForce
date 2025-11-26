@@ -24,7 +24,7 @@ Any lock has a **15% chance** to get bent in the process (configurable) and no l
 
 This helps tone down the effectiveness of absurdly strong barbarians breaking every door in their way just by looking in their general direction.
 
-This status is removed only when you unlock the lock the traditional way and open the door/container. So if you bend a lock, unlock it with spell/lockpick/etc, lock it back without interacting with the door/container, the lock will continue to count as "bent".
+This status is removed only when you unlock the lock the traditional way and open the door/container. So if you bend a lock, unlock it with a spell/lockpick/etc, and lock it back without interacting with the door/container, the lock will continue to count as "bent".
 
 ### And Don't Forget That Breaking Locks is LOUD!
 
@@ -32,8 +32,8 @@ It shouldn't be a surprise that hitting a lock with a chunk of metal (or anythin
 
 If you hit an owned lock, two things happen for each present NPC:
 
-1. **A long distance line of sight check** (influenced by Sneak level) - NPC moved a head in the direction of noise and saw you with a weapon. Imagine a look on their face.
-2. **A shorter distance distance check** (influenced by Weapon Skill level) - NPC heard loud noise even through a wall. Your crime has been reported immediately.
+1. **A long-distance line of sight check** (influenced by Sneak level) - NPC turns their head toward the noise and sees you with a weapon. Imagine the look on their face.
+2. **A shorter-distance sound check** (influenced by Weapon Skill level) - NPC hears the loud noise even through a wall. Your crime is reported immediately.
 
 At first I thought that it would be too restrictive. But let's be real - barbarians aren't supposed to be super good at thievery in the first place. They don't avoid combat - they initiate it!  
 All values, of course, are configurable too.
@@ -44,5 +44,7 @@ All values, of course, are configurable too.
 
 ## Special Thanks
 
-**taitechnic** – making Impact Effects which is core to this mod and a fantastic mod by itself.  
-**AOSity** - idea for alarming NPC on breaking an owned lock.
+**taitechnic** - making Impact Effects, which is core to this mod and a fantastic mod by itself.  
+**AOSity** - idea for alarming NPCs when breaking an owned lock.  
+**skrow42** - code snippet for LOS NPC detection taken from his [SHOP](https://www.nexusmods.com/morrowind/mods/57747) mod  
+**S3ctor** - helping navigate the API's quirks
