@@ -26,6 +26,8 @@ enableXpReward_name: Enable Weapon XP Reward
 enableXpReward_description: Counts successfully split lock as 1 successful hit.
 damageContentsOnUnlock_name: Damage Equipment in Containers
 damageContentsOnUnlock_description: Amount of damage ranges from 1 to max durability.
+damageOnH2h_name: Damage for Hitting a Lock with Bare Hands
+damageOnH2h_description: Set it to 0 to disable this feature.
 
 alerting_group_name: Alerting
 alerting_group_description: |

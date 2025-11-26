@@ -8,7 +8,12 @@ local L = require("scripts.BruteForce.bf_logic")
 local omw_utils = require("scripts.BruteForce.utils.openmw_utils")
 
 local function onObjectHit(o, var, res)
-    if not L.registerAttack(o) or L.attackMissed(o) then return end
+    if not L.registerAttack(o) then return end
+
+    L.damageIfH2h()
+
+    if L.attackMissed(o) then return end
+
     core.sendGlobalEvent("checkJammedLock", { o = o, sender = self })
     -- check jammed lock in global script
     -- if it's OK, it will fire a tryUnlocking event back here
@@ -16,14 +21,17 @@ end
 
 local function tryUnlocking(data)
     local o = data.o
-    if L.unlock(o) then
-        L.giveCurrWeaponXp()
-        if types.Container.objectIsInstance(o) then
-            L.damageContainerEquipment(o)
-        end
-        if L.objectIsOwned(o) then
-            L.alertNpcs()
-        end
+
+    if not L.unlock(o) then return end
+
+    L.giveCurrWeaponXp()
+
+    if L.objectIsOwned(o) then
+        L.alertNpcs()
+    end
+
+    if types.Container.objectIsInstance(o) then
+        L.damageContainerEquipment(o)
     end
 end
 

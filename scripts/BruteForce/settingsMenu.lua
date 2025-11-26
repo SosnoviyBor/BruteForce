@@ -47,6 +47,15 @@ I.Settings.registerGroup {
             renderer = 'checkbox',
             default = true,
         },
+        {
+            key = 'damageOnH2h',
+            name = 'damageOnH2h_name',
+            description = 'damageOnH2h_description',
+            renderer = 'number',
+            integer = true,
+            default = 7,
+            min = 0,
+        },
     }
 }
 

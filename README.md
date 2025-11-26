@@ -41,6 +41,7 @@ All values, of course, are configurable too.
 ## Requirements
 
 [**Impact Effects**](https://www.nexusmods.com/morrowind/mods/55508) by taitechnic is a hard requirement.
+**Load Brute Force after Impact Effects!**
 
 ## Special Thanks
 

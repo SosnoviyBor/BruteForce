@@ -116,4 +116,19 @@ function logic.damageContainerEquipment(o)
     end
 end
 
+function logic.damageIfH2h()
+    local weaponSkill = omw_utils.getEquippedWeaponSkillId(self)
+    if weaponSkill == "handtohand" then
+        local attack = {
+            sourceType = I.Combat.ATTACK_SOURCE_TYPES.Misc,
+            strength = 1,
+            damage = {
+                health = sectionUnlocking:get("damageOnH2h"),
+            },
+            successful = true,
+        }
+        self:sendEvent("Hit", attack)
+    end
+end
+
 return logic
