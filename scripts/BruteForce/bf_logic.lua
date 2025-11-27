@@ -8,9 +8,10 @@ local I = require("openmw.interfaces")
 local omw_utils = require("scripts.BruteForce.utils.openmw_utils")
 local detection = require("scripts.BruteForce.utils.detection")
 
-local sectionDebug = storage.playerSection("SettingsBruteForce_debug")
-local sectionUnlocking = storage.playerSection("SettingsBruteForce_unlocking")
-local sectionAlerting = storage.playerSection("SettingsBruteForce_alerting")
+local sectionOnHit = storage.globalSection("SettingsBruteForce_onHit")
+local sectionOnUnlock = storage.globalSection("SettingsBruteForce_onUnlock")
+local sectionAlerting = storage.globalSection("SettingsBruteForce_alerting")
+local sectionDebug = storage.globalSection("SettingsBruteForce_debug")
 local l10n = core.l10n("BruteForce")
 
 local logic = {}
@@ -25,22 +26,19 @@ function logic.attackMissed(o)
     -- check strength
     local str = self.type.stats.attributes.strength(self).modified
     local lockLevel = types.Lockable.getLockLevel(o)
-    local toughness = lockLevel + sectionUnlocking:get("strBonus")
+    local toughness = lockLevel + sectionOnHit:get("strBonus")
     if toughness > str then
-        self:sendEvent('ShowMessage', { message = l10n("too_weak") })
+        self:sendEvent('ShowMessage', { message = l10n("player_too_weak") })
         return true
     end
 
     -- emulate hit chance
-    if math.random() > omw_utils.calcHitChance(self) and not sectionDebug:get("alwaysHit") then
-        return true
-    end
-
-    return false
+    if not sectionDebug:get("enableMisses") then return false end
+    return math.random() > omw_utils.calcHitChance(self)
 end
 
 function logic.unlock(o)
-    if math.random() > sectionUnlocking:get("jamChance") then
+    if math.random() > sectionOnHit:get("jamChance") then
         -- unlock lock
         core.sendGlobalEvent("Unlock", { target = o })
         return true
@@ -53,7 +51,7 @@ function logic.unlock(o)
 end
 
 function logic.giveCurrWeaponXp()
-    if not sectionUnlocking:get("enableXpReward") then return end
+    if not sectionOnUnlock:get("enableXpReward") then return end
     I.SkillProgression.skillUsed(
         omw_utils.getEquippedWeaponSkillId(self),
         { useType = I.SkillProgression.SKILL_USE_TYPES.Weapon_SuccessfulHit }
@@ -62,18 +60,23 @@ end
 
 local function aggroGuards()
     for _, actor in ipairs(nearby.actors) do
-        local class = actor.type.records[actor.recordId].class or ""
+        if not types.NPC.objectIsInstance(actor) then
+            goto continue
+        end
+
+        local class = actor.type.records[actor.recordId].class
         if string.lower(class) == "guard"
             or string.find(actor.recordId, "guard")
         then
             actor:sendEvent('StartAIPackage', { type = 'Pursue', target = self.object })
         end
+
         ::continue::
     end
 end
 
 function logic.alertNpcs()
-    local bounty = sectionAlerting:get("bounty")
+    local bounty = sectionOnUnlock:get("bounty")
     if bounty <= 0 then return end
 
     local losMaxDistBase = sectionAlerting:get("losMaxDistBase")
@@ -100,12 +103,8 @@ function logic.alertNpcs()
     end
 end
 
-function logic.objectIsOwned(o)
-    return o.owner.factionId or o.owner.recordId
-end
-
 function logic.damageContainerEquipment(o)
-    if not sectionUnlocking:get("damageContentsOnUnlock") then return end
+    if not sectionOnUnlock:get("damageContents") then return end
     for _, item in pairs(o.type.inventory(o):getAll()) do
         if omw_utils.itemCanBeDamaged(item) then
             local dmg = -math.random(item.type.records[item.recordId].health)
@@ -118,17 +117,57 @@ function logic.damageContainerEquipment(o)
 end
 
 function logic.damageIfH2h()
-    local weaponSkill = omw_utils.getEquippedWeaponSkillId(self)
-    if weaponSkill == "handtohand" then
-        local attack = {
-            sourceType = I.Combat.ATTACK_SOURCE_TYPES.Misc,
-            strength = 1,
-            damage = {
-                health = sectionUnlocking:get("damageOnH2h"),
-            },
-            successful = true,
-        }
-        self:sendEvent("Hit", attack)
+    local weaponSlot = types.Actor.EQUIPMENT_SLOT.CarriedRight
+    local weapon = self.type.getEquipment(self, weaponSlot)
+
+    if weapon then return end
+
+    self:sendEvent("Hit", {
+        sourceType = I.Combat.ATTACK_SOURCE_TYPES.Misc,
+        strength = 1,
+        damage = {
+            health = sectionOnUnlock:get("damageOnH2h"),
+        },
+        successful = true,
+    })
+end
+
+function logic.wearWeapon(o, actor)
+    local weaponSlot = types.Actor.EQUIPMENT_SLOT.CarriedRight
+    local weapon = actor.type.getEquipment(actor, weaponSlot)
+    local wearMod = sectionOnUnlock:get("weaponWearModifier")
+
+    if not weapon or wearMod == 0 then return end
+
+    local lockLevel = types.Lockable.getLockLevel(o)
+    local dmg = -math.min(
+        lockLevel * wearMod,
+        weapon.type.records[weapon.recordId].health
+    )
+
+    core.sendGlobalEvent("ModifyItemCondition", {
+        item = weapon,
+        amount = dmg,
+    })
+end
+
+function logic.weaponTooWorn(o)
+    if sectionOnUnlock:get("unlockWithBrokenWeapon") then return false end
+
+    local weaponSlot = types.Actor.EQUIPMENT_SLOT.CarriedRight
+    local weapon = self.type.getEquipment(self, weaponSlot)
+    local wearMod = sectionOnUnlock:get("weaponWearModifier")
+
+    if not weapon or wearMod == 0 then return false end
+
+    local lockLevel = types.Lockable.getLockLevel(o)
+    local weaponCondition = weapon.type.records[weapon.recordId].health
+
+    if lockLevel * wearMod > weaponCondition then
+        self:sendEvent('ShowMessage', { message = l10n("weapon_too_worn") })
+        return true
+    else
+        return false
     end
 end
 

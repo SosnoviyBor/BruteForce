@@ -1,5 +1,21 @@
 # Brute Force - Lockpicking for Barbarians (OpenMW)
 
+## 1.2
+
+### Features
+
+- Rearranged settings
+- Weapon now is getting damaged when hitting a lock depending on lock's level. Weapon wears out on successful unlocks or getting the lock bent.
+- If weapon's durability is too low, it will either wear out to 0 durability or prevent player from breaking the lock with it (default)
+- Improved and more informative messages
+- Option to disable getting damaged on h2h misses
+- Option to ignore bent locks
+- Option to disable messages (why?)
+
+### Fixes
+
+- Whitelisted just NPCs for alerting checks
+
 ## 1.1.2
 
 ### Fixes

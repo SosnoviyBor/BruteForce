@@ -1,7 +1,11 @@
+local storage = require("openmw.storage")
 local types = require("openmw.types")
 local core = require("openmw.core")
 
 require("scripts.BruteForce.utils.consts")
+
+local sectionDebug = storage.globalSection("SettingsBruteForce_debug")
+local l10n = core.l10n("BruteForce")
 
 local utils = {}
 
@@ -53,10 +57,11 @@ function utils.checkDependencies(player, dependencies)
     for fileName, interfaceMissing in pairs(dependencies) do
         local filePresent = core.contentFiles.has(string.lower(fileName))
         if not filePresent or interfaceMissing then
-            player:sendEvent('ShowMessage', {
-                message = "[Brute Force] ERROR: Dependency \""
-                    .. fileName .. "\" is either missing or loaded after the Brute Force."
+            local msg = l10n("dependency_missing", {
+                mainMod = "Brute Force",
+                dependency = fileName
             })
+            player:sendEvent('ShowMessage', { message = msg })
         end
     end
 end
@@ -70,6 +75,21 @@ function utils.itemCanBeDamaged(item)
     end
 
     return true
+end
+
+function utils.displayMessage(actor, message)
+    if sectionDebug:get("enableMessages") then
+        actor:sendEvent('ShowMessage', { message = message })
+    end
+end
+
+function utils.addBounty(actor, bounty)
+    local currrentBounty = actor.type.getCrimeLevel(actor)
+    actor.type.setCrimeLevel(actor, currrentBounty + bounty)
+end
+
+function utils.objectIsOwned(o)
+    return o.owner.factionId or o.owner.recordId
 end
 
 return utils

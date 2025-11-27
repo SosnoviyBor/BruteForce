@@ -2,9 +2,13 @@
 # | Messages |
 # +----------+
 
-too_weak: This lock is too sturdy.
-lock_got_jammed: Lock got bent.
-lock_was_jammed: This lock is already bent.
+dependency_missing: >
+  "[{mainMod}] ERROR: Dependency {dependency} is either missing or loaded after the {mainMod}."
+
+player_too_weak: You're too weak to split this lock.
+weapon_too_worn: Your weapon is too worn or weak.
+lock_got_jammed: Lock got bent. Bashing it further won't help.
+lock_was_jammed: This lock is bent. Go back to traditional lockpicking methods.
 
 # +----------+
 # | Settings |
@@ -13,7 +17,7 @@ lock_was_jammed: This lock is already bent.
 page_name: Brute Force
 page_description: Allows breaking locks with melee weapons.
 
-unlocking_group_name: Unlocking Behavior
+onHit_group_name: On Hit
 strBonus_name: Strength Requirement
 strBonus_description: >
   To break a lock you need (LockLevel + StrengthRequirement) amount of strength.
@@ -22,12 +26,30 @@ jamChance_description: |
   Bent locks can't be opened with weapons anymore. Use traditional lockpicking methods instead.
 
   Set it to 0 to disable this feature.
+unlockWithBrokenWeapon_name: Enable Unlocking with Too Worn or Weak Weapons
+unlockWithBrokenWeapon_description: |
+  Weapon is considered too worn or weak if:
+
+  LockLevel * WeaponWearModifier > CurrentWeaponDurability
+damageOnH2h_name: Damage for Hitting a Lock with Fists
+damageOnH2h_description: Set it to 0 to disable this feature.
+damageOnH2hMisses_name: Enable H2H Damage on Misses
+damageOnH2hMisses_description: Disable to only deal damage on successful hits.
+
+onUnlock_group_name: On Unlock
 enableXpReward_name: Enable Weapon XP Reward
 enableXpReward_description: Counts successfully split lock as 1 successful hit.
-damageContentsOnUnlock_name: Damage Equipment in Containers
-damageContentsOnUnlock_description: Amount of damage ranges from 1 to max durability.
-damageOnH2h_name: Damage for Hitting a Lock with Bare Hands
-damageOnH2h_description: Set it to 0 to disable this feature.
+damageContents_name: Damage Equipment in Containers
+damageContents_description: Amount of damage ranges from 1 to max durability.
+weaponWearModifier_name: Weapon Wear Modifier
+weaponWearModifier_description: |
+  Weapon is worn down by (LockLevel * WeaponWearModifier) amount on each hit.
+enableWeaponWearAgainstBentLocks_name: Enable Weapon Wearing Against Bent Locks
+bounty_name: Bounty for Breaking Owned Locks
+bounty_description: |
+  Vanilla bounty for trespassing is 5. Which is comically low.
+
+  Set it to 0 to disable all consequences for breaking owned locks.
 
 alerting_group_name: Alerting
 alerting_group_description: |
@@ -38,11 +60,6 @@ alerting_group_description: |
   2. If they're close enough to you (ignores walls) -> SoundBaseDist - WeaponSkill * WeaponSkillMultiplier
 
   For reference, river Odai in Balmora is around 1000 units wide. And Ra'virr is aroung 600 units away from his locked chest behind the staircase.
-bounty_name: Bounty for Breaking Owned Locks
-bounty_description: |
-  Vanilla bounty for trespassing is 5. Which is comically low.
-
-  Set it to 0 to disable all consequences for breaking owned locks.
 losMaxDistBase_name: LoS Base Max Distance
 losMaxDistSneakModifier_name: LoS Sneak Skill Multiplier
 soundRangeBase_name: Sound Base Max Distance
@@ -50,4 +67,6 @@ soundRangeWeaponSkillModifier_name: Sound Weapon Skill Multiplier
 
 debug_group_name: Debug
 modEnabled_name: Enable Mod
-alwaysHit_name: Disable Misses
+enableMisses_name: Enable Misses
+enableMessages_name: Enable Messages
+ignoreBentLocks_name: Ignore Bent Locks

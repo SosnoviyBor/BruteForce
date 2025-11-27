@@ -15,6 +15,8 @@ So bring some sujamma next time you go adventuring.
 
 Your weapon doesn't matter - but your skills do. The mod follows the vanilla hit chance formula, so that pesky little lock might still be tricky to hit.
 
+Also make sure your weapon is in condition to break locks - they're really hard and wear it quite a bit!
+
 But be careful!
 
 ### Don't Bend the Lock!

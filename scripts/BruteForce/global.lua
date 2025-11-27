@@ -1,9 +1,12 @@
+local storage = require("openmw.storage")
 local types = require("openmw.types")
 local core = require("openmw.core")
 local I = require("openmw.interfaces")
 
 require("scripts.BruteForce.utils.consts")
+local omw_utils = require("scripts.BruteForce.utils.openmw_utils")
 
+local sectionDebug = storage.globalSection("SettingsBruteForce_debug")
 local l10n = core.l10n("BruteForce")
 
 local function lockableOpen(o, actor)
@@ -19,8 +22,9 @@ local function onSave()
 end
 
 local function checkJammedLock(data)
-    if JammedLocks[data.o.id] then
-        data.sender:sendEvent('ShowMessage', { message = l10n("lock_was_jammed") })
+    if JammedLocks[data.o.id] and not sectionDebug:get("ignoreBentLocks") then
+        data.sender:sendEvent("lockWasJammed", { o = data.o })
+        omw_utils.displayMessage(data.sender, l10n("lock_was_jammed"))
     else
         local o = data.o
 
@@ -32,7 +36,7 @@ local function checkJammedLock(data)
             end
         end
 
-        data.sender:sendEvent("tryUnlocking", { o = o })
+        data.sender:sendEvent("lockWasntJammed", { o = o })
     end
 end
 
@@ -41,9 +45,7 @@ local function setJammedLock(data)
 end
 
 local function addBounty(data)
-    local player = data.player
-    local currrentBounty = player.type.getCrimeLevel(player)
-    player.type.setCrimeLevel(player, currrentBounty + data.bounty)
+    omw_utils.addBounty(data.player, data.bounty)
 end
 
 I.Activation.addHandlerForType(types.Door, lockableOpen)
