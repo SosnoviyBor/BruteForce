@@ -62,12 +62,13 @@ end
 
 local function aggroGuards()
     for _, actor in ipairs(nearby.actors) do
-        local class = actor.type.records[actor.recordId].class
+        local class = actor.type.records[actor.recordId].class or ""
         if string.lower(class) == "guard"
             or string.find(actor.recordId, "guard")
         then
             actor:sendEvent('StartAIPackage', { type = 'Pursue', target = self.object })
         end
+        ::continue::
     end
 end
 

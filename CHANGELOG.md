@@ -1,8 +1,16 @@
 # Brute Force - Lockpicking for Barbarians (OpenMW)
 
+## 1.1.2
+
+### Fixes
+
+- Fixed error when trying to check NPC class for alerting
+
 ## 1.1.1
 
-- Fixed blut weapons not hitting the doors/containers
+### Fixes
+
+- Fixed blunt weapons not hitting the doors/containers
 
 ## 1.1
 
