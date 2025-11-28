@@ -119,14 +119,14 @@ end
 function logic.damageIfH2h()
     local weaponSlot = types.Actor.EQUIPMENT_SLOT.CarriedRight
     local weapon = self.type.getEquipment(self, weaponSlot)
-
+    
     if weapon then return end
-
+    
     self:sendEvent("Hit", {
         sourceType = I.Combat.ATTACK_SOURCE_TYPES.Misc,
         strength = 1,
         damage = {
-            health = sectionOnUnlock:get("damageOnH2h"),
+            health = sectionOnHit:get("damageOnH2h"),
         },
         successful = true,
     })

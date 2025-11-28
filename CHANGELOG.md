@@ -1,5 +1,11 @@
 # Brute Force - Lockpicking for Barbarians (OpenMW)
 
+## 1.2.2
+
+### Fixes
+
+- Fixed not dealing damage to player on h2h hits and misses
+
 ## 1.2.1
 
 ### Fixes

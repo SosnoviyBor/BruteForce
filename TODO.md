@@ -13,4 +13,5 @@
   - Maybe changing the material to the metal in Impact Effects?
 - Chance to trigger trap when breaking the lock
 - Triggering the trap if player hits the door/container without lock
+- Add SFX for misses too
 <!-- - Option to disable all messages -->
