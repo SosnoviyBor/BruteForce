@@ -1,5 +1,11 @@
 # Brute Force - Lockpicking for Barbarians (OpenMW)
 
+## 1.2.4
+
+### Fixes
+
+- Fixed message disabling
+
 ## 1.2.3
 
 ### Fixes

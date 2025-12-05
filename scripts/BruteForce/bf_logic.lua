@@ -29,7 +29,7 @@ function logic.attackMissed(o)
     local lockLevel = types.Lockable.getLockLevel(o)
     local toughness = lockLevel + sectionOnHit:get("strBonus")
     if toughness > str then
-        self:sendEvent('ShowMessage', { message = l10n("player_too_weak") })
+        omw_utils.displayMessage(self, l10n("player_too_weak"))
         return true
     end
 
@@ -46,7 +46,7 @@ function logic.unlock(o)
     else
         -- jam lock
         core.sendGlobalEvent("setJammedLock", { id = o.id, val = true })
-        self:sendEvent('ShowMessage', { message = l10n("lock_got_jammed") })
+        omw_utils.displayMessage(self, l10n("lock_got_jammed"))
         return false
     end
 end
@@ -165,7 +165,7 @@ function logic.weaponTooWorn(o)
     local weaponCondition = weapon.type.itemData(weapon).condition
 
     if lockLevel * wearMod > weaponCondition then
-        self:sendEvent('ShowMessage', { message = l10n("weapon_too_worn") })
+        omw_utils.displayMessage(self, l10n("weapon_too_worn"))
         return true
     else
         return false
